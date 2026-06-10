@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Portal de Agendamento KIT</title>
+<!-- v3.0 -->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+
+/* ═══════════════════════════════════════════════════════════════════
+   PORTAL DE AGENDAMENTO KIT — Design System 2025–2026
+   Paleta: deep navy + gradiente violeta→azul, muito espaço, cards 20px
+   Assinatura: borda-esquerda gradiente nos cards de solicitação
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Fundos */
+  --bg:           #07091A;
+  --surface:      #0E1225;
+  --surface2:     #151A30;
+  --surface3:     #1D2340;
+  --glass:        rgba(255,255,255,.04);
+  --glass-border: rgba(255,255,255,.09);
+  --glass-hover:  rgba(255,255,255,.07);
+
+  /* Gradiente principal: violeta → azul */
+  --g-start:      #7C3AED;
+  --g-mid:        #4F46E5;
+  --g-end:        #2563EB;
+  --gradient:     linear-gradient(135deg,#7C3AED,#4F46E5,#2563EB);
+  --gradient-h:   linear-gradient(135deg,#8B5CF6,#6366F1,#3B82F6);
+  --gradient-dim: linear-gradient(135deg,rgba(124,58,237,.15),rgba(37,99,235,.15));
+
+  /* Acentos sólidos */
+  --accent:       #6366F1;
+  --accent-h:     #818CF8;
+  --accent-dim:   rgba(99,102,241,.18);
+  --success:      #10B981;
+  --warning:      #F59E0B;
+  --danger:       #F43F5E;
+  --purple:       #A78BFA;
+
+  /* Texto */
+  --text-1:       #EEF2FF;
+  --text-2:       #94A3B8;
+  --text-3:       #475569;
+
+  /* Radii 2025 — grandes, arredondados */
+  --r-xs:   10px;
+  --r-sm:   14px;
+  --r-md:   20px;
+  --r-lg:   24px;
+  --r-xl:   32px;
+
+  /* Sombras */
+  --sh-sm:  0 2px 8px rgba(0,0,0,.5);
+  --sh-md:  0 8px 32px rgba(0,0,0,.55);
+  --sh-lg:  0 24px 72px rgba(0,0,0,.7);
+  --sh-glow:0 0 40px rgba(99,102,241,.2);
+}
+
+/* ── RESET ──────────────────────────────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:var(--bg);
+  min-height:100vh;
+  color:var(--text-1);
+  -webkit-font-smoothing:antialiased;
+}
+input,select,textarea,button{font-family:inherit}
+
+/* ── AMBIENT BACKGROUND GLOW (signature) ──────────────────────────────────── */
+body::before{
+  content:'';
+  position:fixed;
+  top:-200px;left:-200px;
+  width:700px;height:700px;
+  background:radial-gradient(circle,rgba(99,102,241,.12) 0%,transparent 70%);
+  pointer-events:none;z-index:0;
+  animation:drift 18s ease-in-out infinite alternate;
+}
+body::after{
+  content:'';
+  position:fixed;
+  bottom:-200px;right:-100px;
+  width:600px;height:600px;
+  background:radial-gradient(circle,rgba(124,58,237,.1) 0%,transparent 70%);
+  pointer-events:none;z-index:0;
+  animation:drift 22s ease-in-out infinite alternate-reverse;
+}
+@keyframes drift{0%{transform:translate(0,0)}100%{transform:translate(40px,40px)}}
+#app{position:relative;z-index:1}
+
+/* ── BUTTONS ────────────────────────────────────────────────────────────── */
+.btn{
+  padding:11px 22px;
+  border-radius:var(--r-sm);
+  font-weight:600;font-size:14px;
+  cursor:pointer;border:none;
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1),
+             box-shadow .2s,
+             filter .15s;
+  letter-spacing:.01em;
+  position:relative;overflow:hidden;
+}
+.btn::after{
+  content:'';position:absolute;inset:0;
+  background:rgba(255,255,255,.08);
+  opacity:0;transition:opacity .15s;
+}
+.btn:hover::after{opacity:1}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(0) scale(.98)}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none}
+
+.btn-primary{
+  background:var(--gradient);
+  color:#fff;
+  box-shadow:0 4px 20px rgba(99,102,241,.4);
+}
+.btn-primary:hover{box-shadow:0 8px 32px rgba(99,102,241,.55)}
+.btn-secondary{
+  background:var(--glass);
+  color:var(--text-2);
+  border:1px solid var(--glass-border);
+  backdrop-filter:blur(8px);
+}
+.btn-danger{background:linear-gradient(135deg,#F43F5E,#DC2626);color:#fff}
+.btn-success{background:linear-gradient(135deg,#10B981,#059669);color:#fff}
+.btn-warning{background:linear-gradient(135deg,#F59E0B,#D97706);color:#000}
+.btn-purple{background:linear-gradient(135deg,#A78BFA,#7C3AED);color:#fff}
+
+/* ── FORM ELEMENTS ──────────────────────────────────────────────────────── */
+.input-wrap{margin-bottom:20px}
+.input-wrap label{
+  display:block;font-size:11px;font-weight:700;
+  color:var(--text-3);margin-bottom:8px;
+  text-transform:uppercase;letter-spacing:.09em;
+}
+.input-wrap input,
+.input-wrap select,
+.input-wrap textarea{
+  width:100%;padding:12px 16px;
+  border:1.5px solid var(--glass-border);
+  border-radius:var(--r-sm);
+  font-size:14px;outline:none;
+  background:var(--surface2);
+  color:var(--text-1);
+  font-family:inherit;
+  transition:border-color .2s, box-shadow .2s;
+}
+.input-wrap input::placeholder,
+.input-wrap textarea::placeholder{color:var(--text-3)}
+.input-wrap select option{background:var(--surface2);color:var(--text-1)}
+.input-wrap input:focus,
+.input-wrap select:focus,
+.input-wrap textarea:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 4px rgba(99,102,241,.15);
+}
+
+/* ── CARDS — arredondados 20px, muito padding, glassmorphism suave ──────── */
+.card{
+  background:var(--surface);
+  border-radius:var(--r-md);
+  padding:20px 24px;
+  box-shadow:var(--sh-sm);
+  border:1px solid var(--glass-border);
+  margin-bottom:12px;
+  cursor:pointer;
+  transition:transform .25s cubic-bezier(.34,1.56,.64,1),
+             box-shadow .25s,
+             border-color .2s;
+  position:relative;
+  overflow:hidden;
+}
+/* Assinatura: borda-esquerda gradiente */
+.card::before{
+  content:'';
+  position:absolute;left:0;top:16px;bottom:16px;width:3px;
+  background:var(--gradient);
+  border-radius:0 2px 2px 0;
+  opacity:0;
+  transition:opacity .25s;
+}
+.card:hover{
+  transform:translateY(-3px);
+  box-shadow:var(--sh-md),var(--sh-glow);
+  border-color:rgba(99,102,241,.3);
+}
+.card:hover::before{opacity:1}
+
+/* ── MODALS ─────────────────────────────────────────────────────────────── */
+.modal-overlay{
+  position:fixed;inset:0;
+  background:rgba(2,4,18,.85);
+  backdrop-filter:blur(12px);
+  z-index:1000;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+  animation:fadeIn .2s ease;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{
+  background:var(--surface);
+  border-radius:var(--r-lg);
+  width:100%;max-width:620px;
+  max-height:93vh;overflow-y:auto;
+  box-shadow:var(--sh-lg);
+  border:1px solid var(--glass-border);
+  animation:slideUp .25s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.modal-header{
+  padding:24px 28px;
+  border-bottom:1px solid var(--glass-border);
+  display:flex;justify-content:space-between;align-items:center;
+  position:sticky;top:0;
+  background:var(--surface);
+  z-index:10;
+  border-radius:var(--r-lg) var(--r-lg) 0 0;
+}
+.modal-body{padding:28px}
+.modal-header h3{color:var(--text-1) !important}
+
+/* ── BADGES ─────────────────────────────────────────────────────────────── */
+.badge{
+  border-radius:999px;
+  padding:4px 12px;
+  font-size:11px;font-weight:700;
+  white-space:nowrap;display:inline-block;
+  letter-spacing:.03em;
+  backdrop-filter:blur(8px);
+}
+
+/* ── FILE ITEMS ──────────────────────────────────────────────────────────── */
+.file-item{
+  font-size:12px;color:var(--text-2);
+  background:var(--surface2);
+  border:1px solid var(--glass-border);
+  border-radius:var(--r-sm);
+  padding:10px 14px;margin-bottom:6px;
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+  transition:background .15s;
+}
+.file-item:hover{background:var(--surface3)}
+
+/* ── NOTIF DOT ───────────────────────────────────────────────────────────── */
+.notif-dot{
+  position:absolute;top:-5px;right:-5px;
+  background:var(--danger);color:#fff;
+  font-size:9px;font-weight:800;
+  border-radius:50%;width:18px;height:18px;
+  display:flex;align-items:center;justify-content:center;
+  border:2px solid var(--bg);
+}
+
+/* ── STAT CARDS ──────────────────────────────────────────────────────────── */
+.stat-card{
+  background:var(--surface);
+  border:1px solid var(--glass-border);
+  border-radius:var(--r-md);
+  padding:20px 16px;
+  cursor:pointer;text-align:left;
+  box-shadow:var(--sh-sm);
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1),
+             box-shadow .2s,
+             border-color .2s;
+  position:relative;overflow:hidden;
+}
+.stat-card::after{
+  content:'';
+  position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:var(--gradient);
+  opacity:0;transition:opacity .2s;
+}
+.stat-card:hover{
+  transform:translateY(-3px);
+  box-shadow:var(--sh-md);
+  border-color:rgba(99,102,241,.3);
+}
+.stat-card:hover::after{opacity:1}
+.stat-card.active{
+  background:var(--gradient);
+  border-color:transparent;
+  box-shadow:0 8px 32px rgba(99,102,241,.4);
+}
+.stat-card.active::after{display:none}
+
+/* ── XML INFO ────────────────────────────────────────────────────────────── */
+.xml-info{
+  background:var(--gradient-dim);
+  border:1px solid rgba(99,102,241,.3);
+  border-radius:var(--r-md);
+  padding:16px 20px;margin-bottom:20px;
+}
+.xml-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.xml-info-item{
+  background:var(--surface2);border-radius:var(--r-sm);
+  padding:14px;border:1px solid var(--glass-border);text-align:center;
+  transition:transform .15s;
+}
+.xml-info-item:hover{transform:scale(1.02)}
+.xml-info-item .val{font-size:20px;font-weight:800;color:var(--text-1)}
+.xml-info-item .lbl{font-size:10px;color:var(--text-3);font-weight:700;margin-top:3px;text-transform:uppercase;letter-spacing:.06em}
+
+/* ── TUTORIAL ────────────────────────────────────────────────────────────── */
+.tutorial-step{
+  display:flex;gap:14px;align-items:flex-start;
+  padding:14px 16px;
+  background:var(--surface2);
+  border-radius:var(--r-sm);
+  margin-bottom:10px;
+  border:1px solid var(--glass-border);
+  transition:transform .2s,border-color .2s;
+}
+.tutorial-step:hover{transform:translateX(4px);border-color:rgba(99,102,241,.3)}
+.tutorial-num{
+  width:30px;height:30px;border-radius:50%;
+  background:var(--gradient);color:#fff;
+  font-weight:800;font-size:13px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  box-shadow:0 4px 12px rgba(99,102,241,.4);
+}
+
+/* ── TAB BAR ─────────────────────────────────────────────────────────────── */
+.tab-bar{
+  display:flex;
+  border-bottom:1px solid var(--glass-border);
+  margin-bottom:24px;overflow-x:auto;
+  gap:4px;
+}
+.tab-btn{
+  padding:11px 18px;border:none;background:none;
+  font-weight:600;font-size:13px;
+  color:var(--text-3);cursor:pointer;
+  border-bottom:2px solid transparent;margin-bottom:-1px;
+  white-space:nowrap;
+  border-radius:var(--r-xs) var(--r-xs) 0 0;
+  transition:color .15s,background .15s;
+}
+.tab-btn:hover{color:var(--text-2);background:var(--glass)}
+.tab-btn.active{color:var(--accent-h);border-bottom-color:var(--accent)}
+
+/* ── INFO BOX ────────────────────────────────────────────────────────────── */
+.info-box{
+  background:var(--surface2);border-radius:var(--r-md);
+  padding:20px;margin-bottom:24px;
+  border:1px solid var(--glass-border);
+}
+
+/* ── DEADLINE BADGE ──────────────────────────────────────────────────────── */
+.deadline-badge{
+  font-size:11px;font-weight:700;
+  padding:3px 10px;border-radius:999px;margin-left:6px;
+}
+
+/* ── PICK BUTTON (upload zone) ───────────────────────────────────────────── */
+.pick-btn{
+  width:100%;padding:20px;
+  border:2px dashed var(--glass-border);
+  border-radius:var(--r-md);
+  background:var(--surface2);
+  cursor:pointer;font-size:13px;
+  color:var(--text-3);font-weight:500;
+  display:block;text-align:center;
+  transition:all .2s;
+}
+.pick-btn:hover{
+  border-color:var(--accent);
+  background:var(--accent-dim);
+  color:var(--accent-h);
+  transform:scale(1.01);
+}
+
+/* ── USER ROW ────────────────────────────────────────────────────────────── */
+.user-row{
+  display:grid;grid-template-columns:auto 1fr auto;
+  gap:14px;align-items:center;
+  padding:16px 20px;
+  border-bottom:1px solid var(--glass-border);
+  transition:background .15s;
+}
+.user-row:hover{background:var(--glass)}
+.user-row:last-child{border-bottom:none}
+
+/* ── CALENDAR DAYS ───────────────────────────────────────────────────────── */
+.cal-day{
+  width:38px;height:38px;
+  border-radius:var(--r-xs);
+  border:1px solid var(--glass-border);
+  background:var(--surface2);
+  font-size:13px;font-weight:600;color:var(--text-2);
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s cubic-bezier(.34,1.56,.64,1);
+}
+.cal-day:hover{
+  border-color:var(--accent);
+  background:var(--accent-dim);
+  color:var(--accent-h);
+  transform:scale(1.1);
+}
+.cal-day.blocked{
+  background:rgba(244,63,94,.12);
+  border-color:rgba(244,63,94,.5);
+  color:var(--danger);
+}
+.cal-day.today{
+  border-color:var(--accent);
+  color:var(--accent-h);
+  font-weight:800;
+  box-shadow:0 0 0 3px rgba(99,102,241,.2);
+}
+.cal-day.past{opacity:.25;cursor:not-allowed}
+
+/* ── SCROLLBAR ───────────────────────────────────────────────────────────── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{
+  background:var(--surface3);border-radius:3px;
+}
+::-webkit-scrollbar-thumb:hover{background:var(--text-3)}
+
+/* ── HOVER HIGHLIGHT para itens de lista inline ──────────────────────────── */
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important;transition:none !important}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+var SURL="https://ysygfndxnqvlfmkpfifm.supabase.co";
+var SKEY="sb_publishable_9bfnlt737VHJhdMaO33YkA_8PZETE0N";
+var sb=supabase.createClient(SURL,SKEY);
+var ADMIN_EMAIL="cd.agendamento@produtoskit.com.br";
+var ADMIN_PASS="admcastro";
+var BUCKET="arquivos";
+
+var STATUS={
+  "Recebido":{color:"#3B82F6",bg:"#EFF6FF",icon:"📥"},
+  "Em Análise":{color:"#F59E0B",bg:"#FFFBEB",icon:"🔍"},
+  "Divergência em Ordem de Compras":{color:"#EF4444",bg:"#FEF2F2",icon:"⚠️"},
+  "Agendado":{color:"#10B981",bg:"#ECFDF5",icon:"✅"},
+  "Reagendamento Solicitado":{color:"#8B5CF6",bg:"#F5F3FF",icon:"🔄"},
+  "Entregue":{color:"#6B7280",bg:"#F9FAFB",icon:"📦"},
+  "Cancelado":{color:"#EF4444",bg:"#FEF2F2",icon:"❌"}
+};
+
+function genId(){return Date.now().toString(36)+Math.random().toString(36).slice(2);}
+function fmt(iso){return iso?new Date(iso).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}):""; }
+function fmtDate(iso){return iso?new Date(iso+"T00:00:00").toLocaleDateString("pt-BR"):""; }
+function currency(v){return v?Number(v).toLocaleString("pt-BR",{style:"currency",currency:"BRL"}):""; }
+function daysRemaining(d){if(!d)return null;var t=new Date();t.setHours(0,0,0,0);var g=new Date(d+"T00:00:00");return Math.round((g-t)/86400000);}
+
+function el(tag,attrs){
+  var e=document.createElement(tag);
+  var kids=Array.prototype.slice.call(arguments,2);
+  for(var k in attrs||{}){
+    if(k==='class')e.className=attrs[k];
+    else if(k==='html')e.innerHTML=attrs[k];
+    else if(k.startsWith('on'))e.addEventListener(k.slice(2).toLowerCase(),attrs[k]);
+    else e.setAttribute(k,attrs[k]);
+  }
+  kids.forEach(function(k){if(k!=null)e.appendChild(typeof k==='string'?document.createTextNode(k):k);});
+  return e;
+}
+
+function parseNFeXML(txt){
+  try{
+    var doc=new DOMParser().parseFromString(txt,"text/xml");
+    function get(t){var n=doc.getElementsByTagName(t)[0];return n?n.textContent:null;}
+    var vols=doc.getElementsByTagName('vol'),tv=0,tp=0;
+    for(var i=0;i<vols.length;i++){var q=vols[i].getElementsByTagName('qVol')[0],p=vols[i].getElementsByTagName('pesoB')[0];if(q)tv+=parseInt(q.textContent)||0;if(p)tp+=parseFloat(p.textContent)||0;}
+    var dets=doc.getElementsByTagName('det');
+    return{numero:get('nNF'),emitente:get('xNome'),cnpjEmit:get('CNPJ'),valor:get('vNF'),volumes:tv||dets.length,peso:tp,itens:dets.length,valid:true};
+  }catch(e){return{valid:false};}
+}
+
+function readText(file){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(e){res(e.target.result);};r.onerror=rej;r.readAsText(file);});}
+
+var APP={user:null,blockedDates:[]};
+try{APP.user=JSON.parse(sessionStorage.getItem('agl_u'));}catch(e){}
+
+function render(){document.getElementById('app').replaceChildren(APP.user?buildDash():buildAuth());}
+
+// ── UPLOAD ──────────────────────────────────────────────────────────────────
+async function uploadFiles(files,reqId){
+  var out=[];
+  for(var i=0;i<files.length;i++){
+    var f=files[i],tipo=f.__tipo||'nf';
+    var ext=f.name.includes('.')?f.name.split('.').pop().toLowerCase():'bin';
+    var path=reqId+'/'+tipo+'_'+genId()+'.'+ext;
+    var r=await sb.storage.from(BUCKET).upload(path,f,{upsert:true});
+    if(r.error)throw new Error('Falha: '+f.name+' — '+r.error.message);
+    var u=sb.storage.from(BUCKET).getPublicUrl(path);
+    out.push({name:f.name,path:path,url:u.data.publicUrl,tipo:tipo});
+  }
+  return out;
+}
+
+// ── FILE ZONE ────────────────────────────────────────────────────────────────
+function makeFileZone(label,tipo,accept,arr,cb){
+  var wrap=document.createElement('div');
+  wrap.style.marginBottom='14px';
+  var lbl=document.createElement('div');
+  lbl.style.cssText='font-size:13px;font-weight:600;color:#A8B4CC;margin-bottom:6px';
+  lbl.textContent=label;
+  var btn=document.createElement('button');
+  btn.type='button';
+  btn.className='pick-btn';
+  btn.textContent=(tipo==='nf'?'🧾':'📄')+' Clique para selecionar '+(tipo==='nf'?'Nota Fiscal':'XML');
+  var inp=document.createElement('input');
+  inp.type='file';inp.multiple=true;inp.accept=accept;inp.style.display='none';
+  document.body.appendChild(inp);
+  btn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();inp.click();});
+  var list=document.createElement('div');list.style.marginTop='8px';
+  function refresh(){
+    list.innerHTML='';
+    btn.style.borderColor=arr.length?'#10B981':'#CBD5E1';
+    btn.style.background=arr.length?'#ECFDF5':'#F8FAFC';
+    btn.style.color=arr.length?'#10B981':'#5E6E8A';
+    arr.forEach(function(f,i){
+      var row=el('div',{'class':'file-item'});
+      var nm=document.createElement('span');nm.style.cssText='flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';nm.textContent=(tipo==='nf'?'🧾':'📄')+' '+f.name;
+      var rm=document.createElement('button');rm.type='button';rm.style.cssText='background:none;border:none;color:#EF4444;cursor:pointer;font-size:18px;padding:0 4px;flex-shrink:0';rm.textContent='×';
+      rm.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();arr.splice(i,1);refresh();if(cb)cb();});
+      row.appendChild(nm);row.appendChild(rm);list.appendChild(row);
+    });
+  }
+  inp.addEventListener('change',function(){
+    Array.from(inp.files).forEach(function(f){f.__tipo=tipo;arr.push(f);});
+    inp.value='';refresh();if(cb)cb();
+  });
+  wrap.appendChild(lbl);wrap.appendChild(btn);wrap.appendChild(list);
+  wrap.cleanup=function(){if(inp.parentNode)inp.parentNode.removeChild(inp);};
+  wrap.refresh=refresh;
+  return wrap;
+}
+
+// ── AUTH ─────────────────────────────────────────────────────────────────────
+function buildAuth(){
+  var tab='login',tipo='transportadora';
+  var wrap=el('div',{style:'min-height:100vh;background:linear-gradient(135deg,#07091A 0%,#12082E 35%,#0A1628 70%,#07091A 100%);display:flex;align-items:center;justify-content:center;padding:24px;position:relative;overflow:hidden'});
+  var inner=el('div',{style:'width:100%;max-width:420px'});
+  var logo=el('div',{style:'text-align:center;margin-bottom:32px'},
+    el('div',{style:'display:inline-flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border-radius:24px;padding:16px 28px;border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(16px)'},
+      el('span',{},'🚚'),
+      el('div',{},el('div',{style:'color:#fff;font-weight:800;font-size:18px'},'Portal de Agendamento KIT'),el('div',{style:'color:#A8B4CC;font-size:12px'},'Sistema de Agendamento de Entregas'))
+    )
+  );
+  var box=el('div',{style:'background:#0E1225;border-radius:28px;box-shadow:0 40px 100px rgba(0,0,0,.8),0 0 60px rgba(99,102,241,.12);overflow:hidden;border:1px solid rgba(255,255,255,.1)'});
+  var tabRow=el('div',{style:'display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid rgba(255,255,255,.07)'});
+  var tL=el('button',{style:'padding:18px;background:#0E1225;border:none;font-weight:700;font-size:14px;color:#818CF8;cursor:pointer;border-bottom:2px solid #6366F1;transition:all .2s',onclick:function(){tab='login';refreshTab();}},'Entrar');
+  var tR=el('button',{style:'padding:18px;background:#07091A;border:none;font-weight:700;font-size:14px;color:#475569;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s',onclick:function(){tab='register';refreshTab();}},'Criar Conta');
+  tabRow.appendChild(tL);tabRow.appendChild(tR);
+  var form=el('div',{style:'padding:32px'});
+  var errDiv=el('div',{style:'display:none;background:rgba(239,68,68,.15);color:#EF4444;border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:16px'});
+  function showErr(m){errDiv.textContent='⚠️ '+m;errDiv.style.display='block';}
+  function mkInp(lbl,type,ph,id){var w=el('div',{'class':'input-wrap'});w.appendChild(el('label',{},lbl));w.appendChild(el('input',{type:type,placeholder:ph,id:id}));return w;}
+  var nameW=mkInp('Nome / Razão Social','text','Empresa Exemplo Ltda','a-name');nameW.style.display='none';
+  var cnpjW=mkInp('CNPJ','text','00.000.000/0001-00','a-cnpj');cnpjW.style.display='none';
+  var typeW=el('div',{style:'display:none;margin-bottom:16px'});
+  typeW.appendChild(el('label',{style:'display:block;font-size:13px;font-weight:600;color:#A8B4CC;margin-bottom:6px'},'Tipo de conta'));
+  var tg=el('div',{style:'display:grid;grid-template-columns:1fr 1fr;gap:8px'});
+  var bT=el('button',{type:'button',style:'padding:12px;border:2px solid #6366F1;border-radius:14px;background:rgba(99,102,241,.15);color:#818CF8;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s',onclick:function(){tipo='transportadora';updT();}},'🚛 Transportadora');
+  var bF=el('button',{type:'button',style:'padding:12px;border:2px solid rgba(255,255,255,.1);border-radius:14px;background:rgba(255,255,255,.04);color:#94A3B8;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s',onclick:function(){tipo='fornecedor';updT();}},'🏭 Fornecedor');
+  function updT(){bT.style.borderColor=tipo==='transportadora'?'#6366F1':'rgba(255,255,255,.1)';bT.style.background=tipo==='transportadora'?'rgba(99,102,241,.15)':'rgba(255,255,255,.04)';bT.style.color=tipo==='transportadora'?'#818CF8':'#94A3B8';bF.style.borderColor=tipo==='fornecedor'?'#6366F1':'rgba(255,255,255,.1)';bF.style.background=tipo==='fornecedor'?'rgba(99,102,241,.15)':'rgba(255,255,255,.04)';bF.style.color=tipo==='fornecedor'?'#818CF8':'#94A3B8';}
+  tg.appendChild(bT);tg.appendChild(bF);typeW.appendChild(tg);
+  var emailW=mkInp('E-mail','email','contato@empresa.com','a-email');
+  var passW=mkInp('Senha','password','••••••••','a-pass');
+  var subBtn=el('button',{'class':'btn btn-primary',style:'width:100%',onclick:async function(){
+    errDiv.style.display='none';
+    var email=document.getElementById('a-email').value.trim();
+    var pass=document.getElementById('a-pass').value;
+    if(tab==='login'){
+      if(email===ADMIN_EMAIL&&pass===ADMIN_PASS){doLogin({id:'admin',name:'Administrador',email:ADMIN_EMAIL,type:'admin'});return;}
+      subBtn.disabled=true;subBtn.textContent='Aguarde...';
+      var r=await sb.from('users').select('*').eq('email',email).eq('password',pass).single();
+      subBtn.disabled=false;subBtn.textContent='Entrar no sistema';
+      if(r.error||!r.data){showErr('E-mail ou senha incorretos.');return;}
+      doLogin(r.data);
+    }else{
+      var name=document.getElementById('a-name').value.trim();
+      var cnpj=document.getElementById('a-cnpj').value.trim();
+      if(!name||!email||!pass){showErr('Preencha todos os campos.');return;}
+      subBtn.disabled=true;subBtn.textContent='Aguarde...';
+      var r2=await sb.from('users').insert({id:genId(),name:name,email:email,password:pass,type:tipo,cnpj:cnpj});
+      subBtn.disabled=false;subBtn.textContent='Criar minha conta';
+      if(r2.error){showErr(r2.error.message.includes('unique')?'E-mail já cadastrado.':'Erro ao criar conta.');return;}
+      doLogin({id:genId(),name:name,email:email,type:tipo,cnpj:cnpj,newUser:true});
+    }
+  }},'Entrar no sistema');
+  function refreshTab(){
+    tL.style.background=tab==='login'?'#0E1225':'#07091A';tL.style.color=tab==='login'?'#818CF8':'#475569';tL.style.borderBottom=tab==='login'?'2px solid #6366F1':'2px solid transparent';
+    tR.style.background=tab==='register'?'#0E1225':'#07091A';tR.style.color=tab==='register'?'#818CF8':'#475569';tR.style.borderBottom=tab==='register'?'2px solid #6366F1':'2px solid transparent';
+    nameW.style.display=tab==='register'?'block':'none';cnpjW.style.display=tab==='register'?'block':'none';typeW.style.display=tab==='register'?'block':'none';
+    errDiv.style.display='none';subBtn.textContent=tab==='login'?'Entrar no sistema':'Criar minha conta';
+  }
+  [nameW,cnpjW,typeW,emailW,passW,errDiv,subBtn].forEach(function(e){form.appendChild(e);});
+  box.appendChild(tabRow);box.appendChild(form);inner.appendChild(logo);inner.appendChild(box);wrap.appendChild(inner);
+  return wrap;
+}
+
+function doLogin(u){APP.user=u;sessionStorage.setItem('agl_u',JSON.stringify(u));render();if(u.newUser)setTimeout(showTutorial,500);}
+function doLogout(){APP.user=null;sessionStorage.removeItem('agl_u');render();}
+
+// ── TUTORIAL ─────────────────────────────────────────────────────────────────
+function showTutorial(){
+  var ov=el('div',{'class':'modal-overlay'});
+  var m=el('div',{'class':'modal'});
+  m.appendChild(el('div',{'class':'modal-header'},el('h3',{style:'margin:0;font-size:18px;font-weight:700;color:#F0F4FF'},'👋 Bem-vindo ao Portal KIT!'),el('button',{style:'background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;width:34px;height:34px;font-size:18px;cursor:pointer;color:#94A3B8;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0',onclick:function(){ov.remove();}},'×')));
+  var body=el('div',{'class':'modal-body'});
+  body.appendChild(el('p',{style:'color:#A8B4CC;font-size:14px;margin-bottom:20px'},'Veja como fazer sua primeira solicitação:'));
+  [['1','Clique em "+ Nova Solicitação"'],['2','Informe o número da Nota Fiscal'],['3','Escolha a data preferencial de entrega'],['4','Anexe o arquivo da Nota Fiscal (PDF ou imagem)'],['5','Anexe o arquivo XML — o sistema lê os dados automaticamente'],['6','Clique em "Enviar Solicitação"'],['7','Acompanhe o status na tela principal']].forEach(function(s){
+    body.appendChild(el('div',{'class':'tutorial-step'},el('div',{'class':'tutorial-num'},s[0]),el('div',{style:'font-size:13px;color:#A8B4CC;line-height:1.5'},s[1])));
+  });
+  body.appendChild(el('div',{style:'background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);border-radius:16px;padding:14px 18px;margin-top:18px;font-size:13px;color:#34D399;line-height:1.6'},'💡 Após o envio, nossa equipe analisará e você receberá notificações.'));
+  body.appendChild(el('button',{'class':'btn btn-primary',style:'width:100%;margin-top:20px',onclick:function(){ov.remove();}},'Entendido! 🚀'));
+  m.appendChild(body);ov.appendChild(m);document.body.appendChild(ov);
+}
+
+// ── DASHBOARD ────────────────────────────────────────────────────────────────
+var DASH={reqs:[],notifs:[],filter:'all',search:'',dateFrom:'',dateTo:'',loading:true,showNotifs:false,activeTab:'requests'};
+var dashMain=null;
+
+async function loadAll(){
+  DASH.loading=true;renderMain();
+  var u=APP.user,isAdmin=u.type==='admin';
+  var q=sb.from('requests').select('*').order('created_at',{ascending:false});
+  if(!isAdmin)q=q.eq('user_id',u.id);
+  var r=await q;DASH.reqs=r.data||[];
+  var nq=sb.from('notifications').select('*').order('date',{ascending:false});
+  if(isAdmin)nq=nq.eq('to_user','admin');else nq=nq.eq('to_user',u.id);
+  var n=await nq;DASH.notifs=n.data||[];
+  var bd=await sb.from('blocked_dates').select('*');
+  APP.blockedDates=(bd.data||[]).map(function(d){return d.date;});
+  DASH.loading=false;renderMain();
+}
+
+function buildDash(){
+  var u=APP.user,isAdmin=u.type==='admin';
+  var wrap=el('div',{});
+  // Header
+  var hdr=el('header',{style:'background:rgba(7,9,26,.92);backdrop-filter:blur(20px);color:#fff;padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(255,255,255,.07)'});
+  var hL=el('div',{style:'display:flex;align-items:center;gap:10px'},el('span',{},'🚚'),el('span',{style:'font-weight:800;font-size:17px'},'Portal de Agendamento KIT'));
+  if(isAdmin)hL.appendChild(el('span',{style:'font-size:10px;background:linear-gradient(135deg,#7C3AED,#2563EB);padding:3px 10px;border-radius:999px;font-weight:700;letter-spacing:.05em'},'ADMIN'));
+  var hR=el('div',{style:'display:flex;align-items:center;gap:10px'});
+  // Notif
+  var nw=el('div',{style:'position:relative'});
+  var nb=document.createElement('button');
+  nb.style.cssText='background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:8px 11px;cursor:pointer;color:#EEF2FF;font-size:18px;position:relative;transition:background .15s';
+  nb.textContent='🔔';
+  var nd=document.createElement('span');nd.className='notif-dot';nd.style.display='none';nd.textContent='0';
+  nb.appendChild(nd);
+  var np=document.createElement('div');
+  np.style.cssText='position:absolute;right:0;top:48px;background:#0E1225;border-radius:20px;box-shadow:0 16px 60px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.08);width:320px;z-index:200;overflow:hidden;border:1px solid rgba(255,255,255,.09);display:none;backdrop-filter:blur(20px)';
+  nw.appendChild(nb);nw.appendChild(np);
+  function renderNotifs(){
+    np.style.display=DASH.showNotifs?'block':'none';
+    var unread=DASH.notifs.filter(function(n){return !n.read;}).length;
+    nd.style.display=unread>0?'flex':'none';nd.textContent=String(unread);
+    np.innerHTML='';
+    var nh=document.createElement('div');nh.style.cssText='padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.08);font-weight:700;font-size:14px;color:#F0F4FF';nh.textContent='Notificações';np.appendChild(nh);
+    if(!DASH.notifs.length){var em=document.createElement('div');em.style.cssText='padding:20px;text-align:center;color:#5E6E8A;font-size:13px';em.textContent='Nenhuma notificação';np.appendChild(em);}
+    else{
+      var nl=document.createElement('div');nl.style.cssText='max-height:280px;overflow-y:auto';
+      DASH.notifs.slice(0,10).forEach(function(n){
+        var ni=document.createElement('div');var _nb=n.read?'transparent':'rgba(99,102,241,.08)';ni.style.cssText='padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer;background:'+_nb+';transition:background .15s';
+        var nm=document.createElement('div');nm.style.cssText='font-size:13px;color:#F0F4FF';nm.textContent=n.msg;
+        var nd2=document.createElement('div');nd2.style.cssText='font-size:11px;color:#5E6E8A;margin-top:3px';nd2.textContent=fmt(n.date);
+        ni.appendChild(nm);ni.appendChild(nd2);
+        ni.addEventListener('click',function(){
+          DASH.showNotifs=false;renderNotifs();
+          var r=DASH.reqs.find(function(x){return x.id===n.req_id;});
+          if(r)openDetail(r);
+          else sb.from('requests').select('*').eq('id',n.req_id).single().then(function(res){if(res.data)openDetail(res.data);});
+        });
+        nl.appendChild(ni);
+      });
+      np.appendChild(nl);
+    }
+  }
+  async function markRead(){
+    var key=APP.user.type==='admin'?'admin':APP.user.id;
+    await sb.from('notifications').update({read:true}).eq('to_user',key).eq('read',false);
+    DASH.notifs=DASH.notifs.map(function(n){return Object.assign({},n,{read:true});});
+    renderNotifs();
+  }
+  nb.addEventListener('click',function(e){e.stopPropagation();DASH.showNotifs=!DASH.showNotifs;if(DASH.showNotifs)markRead();renderNotifs();});
+  document.addEventListener('click',function(e){if(!nw.contains(e.target)){DASH.showNotifs=false;renderNotifs();}});
+  hR.appendChild(nw);
+  hR.appendChild(el('span',{style:'font-size:13px;color:#A8B4CC;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'},u.name));
+  hR.appendChild(el('button',{style:'background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:8px 14px;cursor:pointer;color:#A5B4FC;font-size:13px;font-weight:600;transition:all .15s',onclick:openProfile},'👤 Perfil'));
+  hR.appendChild(el('button',{style:'background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:8px 14px;cursor:pointer;color:#A5B4FC;font-size:13px;font-weight:600;transition:all .15s',onclick:doLogout},'Sair'));
+  hdr.appendChild(hL);hdr.appendChild(hR);
+  // Admin tab nav
+  if(isAdmin){
+    var nav=el('div',{style:'background:rgba(10,12,30,.95);backdrop-filter:blur(16px);padding:0 28px;display:flex;gap:2px;border-bottom:1px solid rgba(255,255,255,.06)'});
+    [['requests','📋 Solicitações'],['users','👥 Usuários'],['calendar','📅 Datas Bloqueadas']].forEach(function(t){
+      var active0=DASH.activeTab===t[0];
+      var b=el('button',{style:'padding:10px 16px;border:none;background:none;color:'+(active0?'#fff':'#94A3B8')+';font-weight:600;font-size:13px;cursor:pointer;border-bottom:2px solid '+(active0?'#2563EB':'transparent'),onclick:function(){DASH.activeTab=t[0];renderMain();}},t[1]);
+      nav.appendChild(b);
+    });
+    wrap.appendChild(hdr);wrap.appendChild(nav);
+  }else{wrap.appendChild(hdr);}
+  dashMain=el('div',{style:'max-width:1160px;margin:0 auto;padding:32px 24px'});
+  wrap.appendChild(dashMain);
+  loadAll().then(function(){renderNotifs();});
+  return wrap;
+}
+
+function renderMain(){
+  if(!dashMain)return;
+  var u=APP.user,isAdmin=u.type==='admin';
+  if(isAdmin&&DASH.activeTab==='users'){renderUsers();return;}
+  if(isAdmin&&DASH.activeTab==='calendar'){renderCalendar();return;}
+  renderRequests();
+}
+
+// ── REQUESTS VIEW ─────────────────────────────────────────────────────────────
+function renderRequests(){
+  var u=APP.user,isAdmin=u.type==='admin';
+  var filtered=DASH.reqs.filter(function(r){
+    var mf=DASH.filter==='all'||r.status===DASH.filter;
+    var ms=!DASH.search||r.nf.toLowerCase().includes(DASH.search.toLowerCase())||(r.user_name||'').toLowerCase().includes(DASH.search.toLowerCase());
+    var md=true;
+    if(DASH.dateFrom)md=md&&r.created_at>=DASH.dateFrom;
+    if(DASH.dateTo)md=md&&r.created_at<=DASH.dateTo+'T23:59:59';
+    return mf&&ms&&md;
+  });
+  var counts={};Object.keys(STATUS).forEach(function(s){counts[s]=DASH.reqs.filter(function(r){return r.status===s;}).length;});
+  // Stats
+  var stats=el('div',{style:'display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:12px;margin-bottom:32px'});
+  function mkStat(key,label,count,icon,color){
+    var active=DASH.filter===key;
+    var c=el('div',{'class':'stat-card'+(active?' active':''),onclick:function(){DASH.filter=key;renderMain();}});
+    c.appendChild(el('div',{style:'font-size:20px;margin-bottom:8px'},icon));
+    c.appendChild(el('div',{style:'font-size:24px;font-weight:800;color:'+(active?'#fff':color)},String(count)));
+    c.appendChild(el('div',{style:'font-size:10px;font-weight:600;line-height:1.3;color:'+(active?'#94A3B8':'#64748B')},label));
+    return c;
+  }
+  stats.appendChild(mkStat('all','Total',DASH.reqs.length,'📋','#F0F4FF'));
+  Object.entries(STATUS).forEach(function(e){stats.appendChild(mkStat(e[0],e[0],counts[e[0]]||0,e[1].icon,e[1].color));});
+  // Toolbar
+  var tb=el('div',{style:'display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap'});
+  var sw=el('div',{style:'flex:1;min-width:180px;display:flex'});
+  var si=el('input',{type:'text',placeholder:'Buscar NF ou empresa...',style:'flex:1;padding:12px 16px;border:1.5px solid rgba(255,255,255,.1);border-right:none;border-radius:14px 0 0 14px;font-size:14px;outline:none;background:#151A30;color:#EEF2FF'});
+  si.value=DASH.search;
+  var sb2=el('button',{type:'button',style:'padding:12px 16px;background:#151A30;color:#94A3B8;border:1.5px solid rgba(255,255,255,.1);border-left:none;border-radius:0 14px 14px 0;cursor:pointer;font-size:15px',onclick:function(){DASH.search=si.value;renderMain();}}, '🔍');
+  si.addEventListener('keydown',function(e){if(e.key==='Enter'){DASH.search=si.value;renderMain();}});
+  sw.appendChild(si);sw.appendChild(sb2);tb.appendChild(sw);
+  var df=el('input',{type:'date',style:'padding:12px 14px;border:1.5px solid rgba(255,255,255,.1);border-radius:14px;font-size:13px;outline:none;background:#151A30;color:#EEF2FF',title:'De'});df.value=DASH.dateFrom;df.addEventListener('change',function(){DASH.dateFrom=df.value;renderMain();});
+  var dt=el('input',{type:'date',style:'padding:12px 14px;border:1.5px solid rgba(255,255,255,.1);border-radius:14px;font-size:13px;outline:none;background:#151A30;color:#EEF2FF',title:'Até'});dt.value=DASH.dateTo;dt.addEventListener('change',function(){DASH.dateTo=dt.value;renderMain();});
+  tb.appendChild(df);tb.appendChild(dt);
+  tb.appendChild(el('button',{type:'button',style:'background:#151A30;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:12px 14px;cursor:pointer;font-size:16px;transition:background .15s',onclick:loadAll},'🔄'));
+  if(!isAdmin){
+    tb.appendChild(el('button',{'class':'btn btn-primary',type:'button',onclick:function(){openNewRequest(null);}},'+ Nova Solicitação'));
+    tb.appendChild(el('button',{type:'button',style:'background:#151A30;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:12px;cursor:pointer;transition:background .15s',onclick:showTutorial},'❓'));
+  }
+  // List
+  var list;
+  if(DASH.loading){
+    list=el('div',{style:'text-align:center;padding:48px;color:#A8B4CC;font-size:16px'},'⏳ Carregando...');
+  }else if(!filtered.length){
+    list=el('div',{style:'background:#0E1225;border-radius:24px;padding:64px 48px;text-align:center;border:1px solid rgba(255,255,255,.07)'},
+      el('div',{style:'font-size:48px;margin-bottom:12px'},'📭'),
+      el('div',{style:'color:#A8B4CC;font-size:16px;font-weight:600'},'Nenhuma solicitação encontrada')
+    );
+  }else{
+    list=el('div',{});
+    filtered.forEach(function(req){
+      var nfC=(req.files||[]).filter(function(f){return f.tipo==='nf';}).length;
+      var xmlC=(req.files||[]).filter(function(f){return f.tipo==='xml';}).length;
+      var cfg=STATUS[req.status]||{color:'#6B7280',bg:'#F3F4F6',icon:'•'};
+      var badge=el('span',{'class':'badge',style:'background:'+cfg.bg+';color:'+cfg.color+';border:1px solid '+cfg.color+'30'},cfg.icon+' '+req.status);
+      var top=el('div',{style:'display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap'});
+      top.appendChild(el('span',{style:'font-weight:700;font-size:15px;color:#F0F4FF'},'NF '+req.nf));
+      if(isAdmin)top.appendChild(el('span',{style:'font-size:11px;color:#94A3B8;background:rgba(255,255,255,.06);border-radius:999px;padding:3px 8px;border:1px solid rgba(255,255,255,.08)'},(req.user_type==='transportadora'?'🚛':'🏭')+' '+req.user_name));
+      if(nfC||xmlC)top.appendChild(el('span',{style:'font-size:11px;color:#2563EB;background:#EFF6FF;border-radius:6px;padding:2px 6px'},'📎 '+nfC+' NF · '+xmlC+' XML'));
+      if(req.xml_data&&req.xml_data.valid)top.appendChild(el('span',{style:'font-size:11px;color:#065F46;background:#ECFDF5;border-radius:6px;padding:2px 6px'},'📦 '+req.xml_data.volumes+' vol · '+currency(req.xml_data.valor)));
+      if(req.sched_date){var days=daysRemaining(req.sched_date);var dc=days<0?'background:rgba(244,63,94,.15);color:#F87171;border:1px solid rgba(244,63,94,.3)':days<=2?'background:rgba(245,158,11,.12);color:#FCD34D;border:1px solid rgba(245,158,11,.3)':'background:rgba(16,185,129,.12);color:#34D399;border:1px solid rgba(16,185,129,.3)';top.appendChild(el('span',{'class':'deadline-badge',style:dc},days<0?Math.abs(days)+'d atraso':days===0?'Hoje':days===1?'Amanhã':days+'d'));}
+      var sub=el('div',{style:'font-size:12px;color:#5E6E8A'},fmt(req.created_at));
+      if(req.sched_date)sub.appendChild(document.createTextNode(' · 📅 '+fmtDate(req.sched_date)));
+      var card=el('div',{'class':'card',style:'display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center',onclick:function(){openDetail(req);}});
+      var left=el('div',{});left.appendChild(top);left.appendChild(sub);
+      if(req.obs)left.appendChild(el('div',{style:'font-size:12px;color:#A8B4CC;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:500px'},req.obs));
+      card.appendChild(left);card.appendChild(badge);list.appendChild(card);
+    });
+  }
+  dashMain.replaceChildren(stats,tb,list);
+}
+
+// ── USERS VIEW (ADMIN) ────────────────────────────────────────────────────────
+async function renderUsers(){
+  dashMain.innerHTML='<div style="text-align:center;padding:48px;color:#5E6E8A">⏳ Carregando usuários...</div>';
+  var r=await sb.from('users').select('*').order('created_at',{ascending:false});
+  var users=r.data||[];
+  var wrap=el('div',{});
+  var hdr=el('div',{style:'display:flex;justify-content:space-between;align-items:center;margin-bottom:20px'});
+  hdr.appendChild(el('h2',{style:'font-size:18px;font-weight:700;color:#F0F4FF'},'👥 Usuários Cadastrados ('+users.length+')'));
+  wrap.appendChild(hdr);
+  var box=el('div',{style:'background:#0E1225;border-radius:24px;box-shadow:0 8px 40px rgba(0,0,0,.5);overflow:hidden;border:1px solid rgba(255,255,255,.07)'});
+  if(!users.length){box.appendChild(el('div',{style:'padding:48px;text-align:center;color:#5E6E8A'},'Nenhum usuário cadastrado'));}
+  users.forEach(function(u){
+    var _aBg=u.type==='transportadora'?'rgba(99,102,241,.2)':'rgba(16,185,129,.2)';
+    var _aBd=u.type==='transportadora'?'rgba(99,102,241,.3)':'rgba(16,185,129,.3)';
+    var avatar=el('div',{style:'width:44px;height:44px;border-radius:14px;background:'+_aBg+';display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;border:1px solid '+_aBd},u.type==='transportadora'?'🚛':'🏭');
+    var info=el('div',{});
+    info.appendChild(el('div',{style:'font-weight:600;font-size:14px;color:#F0F4FF'},u.name));
+    info.appendChild(el('div',{style:'font-size:12px;color:#A8B4CC'},u.email+(u.cnpj?' · '+u.cnpj:'')));
+    info.appendChild(el('div',{style:'font-size:11px;color:#5E6E8A;margin-top:2px'},'Desde '+fmtDate(u.created_at)));
+    var actions=el('div',{style:'display:flex;gap:6px;flex-shrink:0'});
+    // Count requests
+    var reqCount=DASH.reqs.filter(function(r){return r.user_id===u.id;}).length;
+    actions.appendChild(el('span',{style:'font-size:11px;color:#94A3B8;background:rgba(255,255,255,.05);border-radius:999px;padding:4px 12px;font-weight:600;border:1px solid rgba(255,255,255,.08)'},reqCount+' solicit.'));
+    actions.appendChild(el('button',{'class':'btn btn-danger',style:'padding:6px 12px;font-size:12px',onclick:function(){deleteUser(u);}}, '🗑️'));
+    var row=el('div',{'class':'user-row'});
+    row.appendChild(avatar);row.appendChild(info);row.appendChild(actions);
+    box.appendChild(row);
+  });
+  wrap.appendChild(box);
+  dashMain.replaceChildren(wrap);
+}
+
+async function deleteUser(u){
+  if(!confirm('Excluir usuário '+u.name+'?\nAs solicitações dele serão mantidas.'))return;
+  var r=await sb.from('users').delete().eq('id',u.id);
+  if(r.error){alert('Erro: '+r.error.message);return;}
+  renderUsers();
+}
+
+// ── CALENDAR VIEW (ADMIN) ─────────────────────────────────────────────────────
+async function renderCalendar(){
+  var r=await sb.from('blocked_dates').select('*').order('date');
+  var blocked=r.data||[];
+  var today=new Date();
+  var curYear=today.getFullYear(),curMonth=today.getMonth();
+  function buildCalView(year,month){
+    dashMain.innerHTML='';
+    var wrap=el('div',{});
+    var hdr=el('div',{style:'display:flex;justify-content:space-between;align-items:center;margin-bottom:20px'});
+    hdr.appendChild(el('h2',{style:'font-size:18px;font-weight:700;color:#F0F4FF'},'📅 Datas Bloqueadas'));
+    wrap.appendChild(hdr);
+    // Calendar nav
+    var cal=el('div',{style:'background:#0E1225;border-radius:24px;padding:28px;box-shadow:0 8px 40px rgba(0,0,0,.5);margin-bottom:24px;border:1px solid rgba(255,255,255,.07)'});
+    var nav=el('div',{style:'display:flex;justify-content:space-between;align-items:center;margin-bottom:16px'});
+    var months=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    nav.appendChild(el('button',{type:'button','class':'btn btn-secondary',style:'padding:6px 12px',onclick:function(){if(month===0){month=11;year--;}else month--;buildCalView(year,month);}},'◀'));
+    nav.appendChild(el('span',{style:'font-weight:700;font-size:16px;color:#F0F4FF'},months[month]+' '+year));
+    nav.appendChild(el('button',{type:'button','class':'btn btn-secondary',style:'padding:6px 12px',onclick:function(){if(month===11){month=0;year++;}else month++;buildCalView(year,month);}},'▶'));
+    cal.appendChild(nav);
+    var grid=el('div',{style:'display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center'});
+    ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].forEach(function(d){grid.appendChild(el('div',{style:'font-size:11px;font-weight:700;color:#5E6E8A;padding:4px'},d));});
+    var firstDay=new Date(year,month,1).getDay();
+    var daysInMonth=new Date(year,month+1,0).getDate();
+    for(var i=0;i<firstDay;i++)grid.appendChild(el('div',{}));
+    var blockedDates=blocked.map(function(b){return b.date;});
+    for(var d=1;d<=daysInMonth;d++){
+      var dateStr=year+'-'+(String(month+1).padStart(2,'0'))+'-'+(String(d).padStart(2,'0'));
+      var isPast=new Date(dateStr+'T00:00:00')<today&&dateStr!==today.toISOString().slice(0,10);
+      var isToday=dateStr===today.toISOString().slice(0,10);
+      var isBlocked=blockedDates.includes(dateStr);
+      var dayEl=document.createElement('div');
+      dayEl.className='cal-day'+(isBlocked?' blocked':isToday?' today':isPast?' past':'');
+      dayEl.textContent=String(d);
+      if(!isPast){
+        (function(ds,isB){
+          dayEl.addEventListener('click',async function(){
+            if(isB){
+              if(!confirm('Desbloquear '+fmtDate(ds)+'?'))return;
+              await sb.from('blocked_dates').delete().eq('date',ds);
+            }else{
+              var reason=prompt('Motivo do bloqueio para '+fmtDate(ds)+' (opcional):');
+              if(reason===null)return;
+              await sb.from('blocked_dates').insert({id:genId(),date:ds,reason:reason||'Indisponível'});
+            }
+            var r2=await sb.from('blocked_dates').select('*').order('date');
+            blocked=r2.data||[];
+            APP.blockedDates=blocked.map(function(b){return b.date;});
+            buildCalView(year,month);
+          });
+        })(dateStr,isBlocked);
+      }
+      grid.appendChild(dayEl);
+    }
+    cal.appendChild(grid);
+    cal.appendChild(el('div',{style:'display:flex;gap:12px;margin-top:16px;font-size:12px;color:#A8B4CC'},
+      el('span',{style:'display:flex;align-items:center;gap:4px'},el('span',{style:'width:14px;height:14px;background:#FEF2F2;border:1.5px solid #EF4444;border-radius:3px;display:inline-block'}),' Bloqueado'),
+      el('span',{style:'display:flex;align-items:center;gap:4px'},el('span',{style:'width:14px;height:14px;background:#2D6BE4;border:1.5px solid #2D6BE4;border-radius:3px;display:inline-block'}),' Hoje'),
+      el('span',{},'Clique para bloquear/desbloquear')
+    ));
+    wrap.appendChild(cal);
+    // List of blocked dates
+    if(blocked.length){
+      var listBox=el('div',{style:'background:#0E1225;border-radius:20px;padding:20px;box-shadow:0 8px 40px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.07)'});
+      listBox.appendChild(el('div',{style:'font-size:14px;font-weight:700;color:#F0F4FF;margin-bottom:12px'},'Datas bloqueadas ('+blocked.length+')'));
+      blocked.forEach(function(b){
+        var row=el('div',{style:'display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #F1F5F9'});
+        var info=el('div',{});
+        info.appendChild(el('div',{style:'font-weight:600;font-size:14px;color:#EF4444'},'❌ '+fmtDate(b.date)));
+        if(b.reason)info.appendChild(el('div',{style:'font-size:12px;color:#A8B4CC'},b.reason));
+        var rm=el('button',{'class':'btn btn-danger',style:'padding:5px 10px;font-size:12px',onclick:async function(){
+          await sb.from('blocked_dates').delete().eq('id',b.id);
+          var r2=await sb.from('blocked_dates').select('*').order('date');
+          blocked=r2.data||[];APP.blockedDates=blocked.map(function(x){return x.date;});
+          buildCalView(year,month);
+        }},'Remover');
+        row.appendChild(info);row.appendChild(rm);listBox.appendChild(row);
+      });
+      wrap.appendChild(listBox);
+    }
+    dashMain.appendChild(wrap);
+  }
+  buildCalView(curYear,curMonth);
+}
+
+// ── PROFILE ───────────────────────────────────────────────────────────────────
+function openProfile(){
+  var u=APP.user;
+  if(u.type==='admin'){alert('Perfil do administrador não pode ser editado aqui.');return;}
+  var ov=el('div',{'class':'modal-overlay'});
+  var m=el('div',{'class':'modal'});
+  m.appendChild(el('div',{'class':'modal-header'},el('h3',{style:'margin:0;font-size:18px;font-weight:700;color:#F0F4FF'},'👤 Meu Perfil'),el('button',{style:'background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;width:34px;height:34px;font-size:18px;cursor:pointer;color:#94A3B8;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0',onclick:function(){ov.remove();}},'×')));
+  var body=el('div',{'class':'modal-body'});
+  function mkI(l,t,v,id){var w=el('div',{'class':'input-wrap'});w.appendChild(el('label',{},l));w.appendChild(el('input',{type:t,value:v||'',id:id}));return w;}
+  body.appendChild(mkI('Nome / Razão Social','text',u.name,'p-name'));
+  body.appendChild(mkI('CNPJ','text',u.cnpj,'p-cnpj'));
+  body.appendChild(mkI('E-mail','email',u.email,'p-email'));
+  body.appendChild(mkI('Nova senha (deixe em branco para manter)','password','','p-pass'));
+  var err=el('div',{style:'display:none;background:rgba(239,68,68,.15);color:#EF4444;border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:16px'});
+  body.appendChild(err);
+  var btns=el('div',{style:'display:flex;gap:10px'});
+  var sv=el('button',{'class':'btn btn-primary',style:'flex:1',onclick:async function(){
+    var name=document.getElementById('p-name').value.trim();
+    var cnpj=document.getElementById('p-cnpj').value.trim();
+    var email=document.getElementById('p-email').value.trim();
+    var pass=document.getElementById('p-pass').value;
+    if(!name||!email){err.textContent='⚠️ Nome e e-mail obrigatórios.';err.style.display='block';return;}
+    sv.disabled=true;sv.textContent='Salvando...';
+    var upd={name:name,cnpj:cnpj,email:email};if(pass)upd.password=pass;
+    var r=await sb.from('users').update(upd).eq('id',u.id);
+    sv.disabled=false;sv.textContent='Salvar';
+    if(r.error){err.textContent='⚠️ '+r.error.message;err.style.display='block';return;}
+    APP.user=Object.assign({},APP.user,upd);sessionStorage.setItem('agl_u',JSON.stringify(APP.user));
+    ov.remove();alert('Perfil atualizado!');render();
+  }},'Salvar');
+  btns.appendChild(el('button',{'class':'btn btn-secondary',style:'flex:1',onclick:function(){ov.remove();}},'Cancelar'));
+  btns.appendChild(sv);body.appendChild(btns);m.appendChild(body);ov.appendChild(m);document.body.appendChild(ov);
+}
+
+// ── NEW / EDIT REQUEST ────────────────────────────────────────────────────────
+function openNewRequest(editReq){
+  var isEdit=!!(editReq&&editReq.id),nfFiles=[],xmlFiles=[],xmlData=null;
+  var nfZ=null,xmlZ=null;
+  var ov=el('div',{'class':'modal-overlay'});
+  var m=el('div',{'class':'modal'});
+  var closeAll=function(){if(nfZ&&nfZ.cleanup)nfZ.cleanup();if(xmlZ&&xmlZ.cleanup)xmlZ.cleanup();ov.remove();};
+  m.appendChild(el('div',{'class':'modal-header'},
+    el('h3',{style:'margin:0;font-size:18px;font-weight:700;color:#F0F4FF'},isEdit?'Editar Solicitação':'Nova Solicitação'),
+    el('button',{style:'background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;width:34px;height:34px;font-size:18px;cursor:pointer;color:#94A3B8;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0',onclick:closeAll},'×')
+  ));
+  var body=el('div',{'class':'modal-body'});
+  var nfW=el('div',{'class':'input-wrap'});nfW.appendChild(el('label',{},'Número da Nota Fiscal *'));
+  var nfI=el('input',{type:'text',placeholder:'Ex: 001234'});nfI.value=isEdit?editReq.nf:'';nfW.appendChild(nfI);
+  var dtW=el('div',{'class':'input-wrap'});dtW.appendChild(el('label',{},'Data preferencial'));
+  var dtI=el('input',{type:'date'});dtI.value=isEdit?editReq.pre_date||'':'';
+  // Block blocked dates
+  dtI.addEventListener('change',function(){
+    if(APP.blockedDates.includes(dtI.value)){
+      alert('⚠️ A data '+fmtDate(dtI.value)+' está bloqueada para agendamentos. Escolha outra data.');
+      dtI.value='';
+    }
+  });
+  dtW.appendChild(dtI);
+  var obsW=el('div',{'class':'input-wrap'});obsW.appendChild(el('label',{},'Observações'));
+  var obsI=el('textarea',{rows:'2',placeholder:'Informe detalhes...',style:'width:100%;padding:12px 16px;border:1.5px solid rgba(255,255,255,.1);border-radius:14px;font-size:14px;outline:none;resize:vertical;font-family:inherit;background:#151A30;color:#EEF2FF'});
+  obsI.value=isEdit?editReq.obs||'':'';obsW.appendChild(obsI);
+  // XML preview
+  var xPrev=el('div',{style:'display:none'});
+  function showXML(data){
+    if(!data||!data.valid){xPrev.style.display='none';xmlData=null;return;}
+    xmlData=data;xPrev.style.display='block';
+    xPrev.innerHTML='';
+    var xb=el('div',{'class':'xml-info'});
+    xb.appendChild(el('div',{style:'font-size:13px;font-weight:700;color:#1E40AF;margin-bottom:4px'},'✅ XML lido com sucesso!'));
+    if(data.emitente)xb.appendChild(el('div',{style:'font-size:12px;color:#A8B4CC'},data.emitente));
+    var grid=el('div',{'class':'xml-info-grid'});
+    [['Volumes',String(data.volumes||0)],['Itens',String(data.itens||0)],['Peso',data.peso?data.peso.toFixed(1)+'kg':'—'],['Valor',currency(data.valor)]].forEach(function(x){
+      var item=el('div',{'class':'xml-info-item'});item.appendChild(el('div',{'class':'val'},x[1]));item.appendChild(el('div',{'class':'lbl'},x[0]));grid.appendChild(item);
+    });
+    xb.appendChild(grid);xPrev.appendChild(xb);
+    if(data.numero&&!nfI.value)nfI.value=data.numero;
+  }
+  var fBox=el('div',{style:'background:#151A30;border-radius:20px;padding:20px;margin-bottom:20px;border:1px solid rgba(255,255,255,.09)'});
+  fBox.appendChild(el('div',{style:'font-size:13px;font-weight:700;color:#F0F4FF;margin-bottom:4px'},'📎 Anexar Documentos'));
+  if(isEdit)fBox.appendChild(el('div',{style:'font-size:12px;color:#A8B4CC;margin-bottom:10px'},'Novos arquivos serão adicionados aos já existentes.'));
+  nfZ=makeFileZone('🧾 Nota Fiscal (PDF, imagem)','nf','.pdf,.jpg,.jpeg,.png',nfFiles,null);
+  xmlZ=makeFileZone('📄 Arquivo XML','xml','.xml,.txt',xmlFiles,async function(){
+    if(xmlFiles.length){var t=await readText(xmlFiles[xmlFiles.length-1]);showXML(parseNFeXML(t));}
+    else{xPrev.style.display='none';xmlData=null;}
+  });
+  fBox.appendChild(nfZ);fBox.appendChild(xPrev);fBox.appendChild(xmlZ);
+  var prog=el('div',{style:'display:none;background:#EFF6FF;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#2563EB;font-weight:600'});
+  var btns=el('div',{style:'display:flex;gap:10px'});
+  var subBtn=el('button',{'class':'btn btn-primary',style:'flex:2',onclick:async function(){
+    var nf=nfI.value.trim();
+    if(!nf){alert('Informe o número da Nota Fiscal.');return;}
+    if(!isEdit&&nfFiles.length===0){alert('Anexe pelo menos um arquivo de Nota Fiscal.');return;}
+    subBtn.disabled=true;subBtn.textContent='Enviando...';prog.style.display='block';
+    try{
+      var reqId=isEdit?editReq.id:genId();
+      nfFiles.forEach(function(f){f.__tipo='nf';});
+      xmlFiles.forEach(function(f){f.__tipo='xml';});
+      var allFiles=nfFiles.concat(xmlFiles);
+      prog.textContent='⏳ Enviando arquivos ('+allFiles.length+')...';
+      var uploaded=await uploadFiles(allFiles,reqId);
+      var existFiles=isEdit?(editReq.files||[]):[];
+      var allUploaded=existFiles.concat(uploaded);
+      if(isEdit){
+        var nh=(editReq.history||[]).concat([{status:editReq.status,note:'Solicitação editada. '+uploaded.length+' arquivo(s) adicionado(s).',date:new Date().toISOString()}]);
+        var ur=await sb.from('requests').update({nf:nf,obs:obsI.value,pre_date:dtI.value,files:allUploaded,xml_data:xmlData||editReq.xml_data||null,history:nh,updated_at:new Date().toISOString()}).eq('id',reqId);
+        if(ur.error)throw ur.error;
+        await sb.from('notifications').insert({id:genId(),to_user:'admin',req_id:reqId,msg:'Solicitação NF '+nf+' editada por '+APP.user.name,read:false});
+      }else{
+        prog.textContent='⏳ Salvando solicitação...';
+        var req={id:reqId,user_id:APP.user.id,user_name:APP.user.name,user_type:APP.user.type,user_email:APP.user.email,nf:nf,obs:obsI.value,pre_date:dtI.value,files:allUploaded,xml_data:xmlData||null,status:'Recebido',history:[{status:'Recebido',note:'Solicitação recebida pelo sistema.',date:new Date().toISOString()}]};
+        var ir=await sb.from('requests').insert(req);
+        if(ir.error)throw ir.error;
+        await sb.from('notifications').insert({id:genId(),to_user:'admin',req_id:reqId,msg:'Nova solicitação de '+APP.user.name+' — NF '+nf,read:false});
+      }
+      if(nfZ.cleanup)nfZ.cleanup();if(xmlZ.cleanup)xmlZ.cleanup();
+      ov.remove();loadAll();
+    }catch(e){
+      alert('Erro: '+(e.message||JSON.stringify(e)));
+      subBtn.disabled=false;subBtn.textContent=isEdit?'Salvar alterações':'Enviar Solicitação';prog.style.display='none';
+    }
+  }},isEdit?'Salvar alterações':'Enviar Solicitação');
+  btns.appendChild(el('button',{'class':'btn btn-secondary',style:'flex:1',onclick:closeAll},'Cancelar'));
+  btns.appendChild(subBtn);
+  [nfW,dtW,obsW,fBox,prog,btns].forEach(function(e){body.appendChild(e);});
+  m.appendChild(body);ov.appendChild(m);document.body.appendChild(ov);
+}
+
+// ── DETAIL ────────────────────────────────────────────────────────────────────
+function openDetail(req){
+  var isAdmin=APP.user.type==='admin';
+  var ov=el('div',{'class':'modal-overlay'});
+  var m=el('div',{'class':'modal'});
+  var cfg=STATUS[req.status]||{color:'#6B7280',bg:'#F3F4F6',icon:'•'};
+  var badge=el('span',{'class':'badge',style:'background:'+cfg.bg+';color:'+cfg.color+';border:1px solid '+cfg.color+'30'},cfg.icon+' '+req.status);
+  var hdrR=el('div',{style:'display:flex;align-items:center;gap:6px'});
+  if(!isAdmin&&!['Cancelado','Entregue'].includes(req.status))hdrR.appendChild(el('button',{'class':'btn btn-secondary',style:'padding:6px 10px;font-size:12px',onclick:function(){ov.remove();openNewRequest(req);}},'✏️ Editar'));
+  if(!isAdmin&&req.status==='Agendado')hdrR.appendChild(el('button',{'class':'btn btn-warning',style:'padding:6px 10px;font-size:12px',onclick:function(){openReschedule(req,ov);}},'🔄 Reagendar'));
+  if(!isAdmin&&['Recebido','Divergência em Ordem de Compras'].includes(req.status))hdrR.appendChild(el('button',{'class':'btn btn-danger',style:'padding:6px 10px;font-size:12px',onclick:function(){deleteReq(req,ov);}},'🗑️'));
+  if(isAdmin)hdrR.appendChild(el('button',{'class':'btn btn-danger',style:'padding:6px 10px;font-size:12px',onclick:function(){deleteReq(req,ov);}},'🗑️'));
+  hdrR.appendChild(el('button',{style:'background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;width:34px;height:34px;font-size:18px;cursor:pointer;color:#94A3B8;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0',onclick:function(){ov.remove();}},'×'));
+  m.appendChild(el('div',{'class':'modal-header'},el('h3',{style:'margin:0;font-size:16px;font-weight:700;color:#F0F4FF'},'NF '+req.nf),hdrR));
+  var body=el('div',{'class':'modal-body'});
+  // Tabs
+  var tabBar=el('div',{'class':'tab-bar'});
+  var tabBtns=[],panels=[];
+  function mkTab(lbl,content){
+    var b=el('button',{'class':'tab-btn'},lbl);
+    var p=el('div',{style:'display:none'});p.appendChild(content);
+    tabBtns.push(b);panels.push(p);
+    b.addEventListener('click',function(){tabBtns.forEach(function(x,i){x.classList.toggle('active',x===b);panels[i].style.display=x===b?'block':'none';});});
+    tabBar.appendChild(b);return p;
+  }
+  // Info panel
+  var infoPanel=el('div',{});
+  var ib=el('div',{'class':'info-box'});
+  function row(l,v){var d=el('div',{style:'display:flex;justify-content:space-between;margin-bottom:8px;align-items:flex-start'});d.appendChild(el('span',{style:'font-size:13px;color:#A8B4CC;font-weight:600;flex-shrink:0'},l));d.appendChild(el('span',{style:'font-size:13px;color:#F0F4FF;text-align:right;word-break:break-all'},v));return d;}
+  ib.appendChild(row('Empresa',req.user_name+' ('+req.user_type+')'));
+  ib.appendChild(row('E-mail',req.user_email));
+  ib.appendChild(row('NF',req.nf));
+  if(req.pre_date)ib.appendChild(row('Data preferencial',fmtDate(req.pre_date)));
+  if(req.sched_date){var days=daysRemaining(req.sched_date);ib.appendChild(row('Data agendada',fmtDate(req.sched_date)+(days<0?' ('+Math.abs(days)+'d atraso)':days===0?' (Hoje)':' (em '+days+'d)')));}
+  ib.appendChild(row('Aberto em',fmt(req.created_at)));
+  if(req.obs)ib.appendChild(row('Obs.',req.obs));
+  var sr=el('div',{style:'display:flex;justify-content:space-between;align-items:center;margin-top:8px'});sr.appendChild(el('span',{style:'font-size:13px;color:#A8B4CC;font-weight:600'},'Status'));sr.appendChild(badge);ib.appendChild(sr);
+  infoPanel.appendChild(ib);
+  if(req.xml_data&&req.xml_data.valid){
+    var xb=el('div',{'class':'xml-info'});
+    xb.appendChild(el('div',{style:'font-size:13px;font-weight:700;color:#1E40AF;margin-bottom:4px'},'📦 Dados da NF-e (XML)'));
+    if(req.xml_data.emitente)xb.appendChild(el('div',{style:'font-size:12px;color:#A8B4CC;margin-bottom:8px'},req.xml_data.emitente));
+    var grid2=el('div',{'class':'xml-info-grid'});
+    [['Volumes',String(req.xml_data.volumes||0)],['Itens',String(req.xml_data.itens||0)],['Peso',req.xml_data.peso?req.xml_data.peso.toFixed(1)+'kg':'—'],['Valor',currency(req.xml_data.valor)]].forEach(function(x){var item=el('div',{'class':'xml-info-item'});item.appendChild(el('div',{'class':'val'},x[1]));item.appendChild(el('div',{'class':'lbl'},x[0]));grid2.appendChild(item);});
+    xb.appendChild(grid2);infoPanel.appendChild(xb);
+  }
+  mkTab('ℹ️ Info',infoPanel);
+  // Files panel
+  var filesPanel=el('div',{});
+  var nfFiles=(req.files||[]).filter(function(f){return f.tipo==='nf';});
+  var xmlFiles=(req.files||[]).filter(function(f){return f.tipo==='xml';});
+  function mkFileSection(files,label){
+    if(!files.length)return null;
+    var s=el('div',{style:'margin-bottom:16px'});
+    s.appendChild(el('div',{style:'font-size:13px;font-weight:700;color:#A8B4CC;margin-bottom:6px'},label+' ('+files.length+')'));
+    files.forEach(function(f){
+      var item=el('div',{'class':'file-item'});
+      var nm=document.createElement('span');nm.style.cssText='flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';nm.textContent=(label.includes('NF')?'🧾':'📄')+' '+f.name;
+      item.appendChild(nm);
+      if(f.url){var a=el('a',{href:f.url,target:'_blank',style:'background:#2D6BE4;color:#fff;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:600;text-decoration:none;flex-shrink:0'},'⬇ Baixar');item.appendChild(a);}
+      s.appendChild(item);
+    });
+    if(files.length>1){s.appendChild(el('button',{'class':'btn btn-secondary',type:'button',style:'width:100%;margin-top:6px;font-size:12px',onclick:function(){files.forEach(function(f,i){if(f.url)setTimeout(function(){var a=document.createElement('a');a.href=f.url;a.target='_blank';a.download=f.name;document.body.appendChild(a);a.click();document.body.removeChild(a);},i*800);});}}, '⬇ Baixar todos'));}
+    return s;
+  }
+  if(!nfFiles.length&&!xmlFiles.length)filesPanel.appendChild(el('div',{style:'text-align:center;padding:32px;color:#5E6E8A'},'Nenhum arquivo'));
+  var s1=mkFileSection(nfFiles,'🧾 Notas Fiscais');var s2=mkFileSection(xmlFiles,'📄 XMLs');
+  if(s1)filesPanel.appendChild(s1);if(s2)filesPanel.appendChild(s2);
+  if(isAdmin&&(req.files||[]).length>1)filesPanel.appendChild(el('button',{'class':'btn btn-primary',type:'button',style:'width:100%;margin-top:8px',onclick:function(){(req.files||[]).forEach(function(f,i){if(f.url)setTimeout(function(){var a=document.createElement('a');a.href=f.url;a.target='_blank';a.download=f.name;document.body.appendChild(a);a.click();document.body.removeChild(a);},i*800);});}},'⬇ Baixar todos os arquivos'));
+  mkTab('📎 Anexos',filesPanel);
+  // History panel
+  var histPanel=el('div',{});
+  var hist=(req.history||[]).slice().reverse();
+  if(!hist.length)histPanel.appendChild(el('div',{style:'text-align:center;padding:32px;color:#5E6E8A'},'Sem histórico'));
+  hist.forEach(function(h){
+    var hc=STATUS[h.status]||{color:'#94A3B8',bg:'#F3F4F6',icon:'•'};
+    var hb=el('span',{'class':'badge',style:'background:'+hc.bg+';color:'+hc.color+';border:1px solid '+hc.color+'30'},hc.icon+' '+h.status);
+    var hr=el('div',{style:'display:flex;gap:10px;align-items:flex-start;margin-bottom:12px'});
+    var dot=el('div',{style:'width:8px;height:8px;border-radius:50%;background:'+hc.color+';margin-top:5px;flex-shrink:0'});
+    var hi=el('div',{style:'flex:1'});
+    var ht=el('div',{style:'display:flex;gap:8px;align-items:center;flex-wrap:wrap'});ht.appendChild(hb);ht.appendChild(el('span',{style:'font-size:11px;color:#5E6E8A'},fmt(h.date)));hi.appendChild(ht);
+    if(h.note)hi.appendChild(el('div',{style:'font-size:12px;color:#A8B4CC;margin-top:3px'},h.note));
+    hr.appendChild(dot);hr.appendChild(hi);histPanel.appendChild(hr);
+  });
+  mkTab('📋 Histórico',histPanel);
+  // Admin update panel
+  if(isAdmin){
+    var adminPanel=el('div',{});
+    var selW=el('div',{'class':'input-wrap'});selW.appendChild(el('label',{},'Novo status'));
+    var sel=el('select',{style:'width:100%;padding:12px 16px;border:1.5px solid rgba(255,255,255,.1);border-radius:14px;font-size:14px;outline:none;background:#151A30;color:#EEF2FF'});
+    Object.keys(STATUS).forEach(function(s){var o=el('option',{value:s},s);if(s===req.status)o.selected=true;sel.appendChild(o);});
+    selW.appendChild(sel);adminPanel.appendChild(selW);
+    var sdW=el('div',{'class':'input-wrap',style:'display:none'});sdW.appendChild(el('label',{},'Data do agendamento'));
+    var sdI=el('input',{type:'date',value:req.sched_date||''});sdW.appendChild(sdI);adminPanel.appendChild(sdW);
+    sel.addEventListener('change',function(){sdW.style.display=['Agendado','Reagendamento Solicitado'].includes(sel.value)?'block':'none';});
+    var noteW=el('div',{'class':'input-wrap'});noteW.appendChild(el('label',{},'Observação'));
+    var noteI=el('textarea',{rows:'2',placeholder:'Ex: Agendado no dock 3...',style:'width:100%;padding:12px 16px;border:1.5px solid rgba(255,255,255,.1);border-radius:14px;font-size:14px;outline:none;resize:vertical;font-family:inherit;background:#151A30;color:#EEF2FF'});noteW.appendChild(noteI);adminPanel.appendChild(noteW);
+    var svBtn=el('button',{'class':'btn btn-primary',style:'width:100%',type:'button',onclick:async function(){
+      svBtn.disabled=true;svBtn.textContent='Salvando...';
+      var ns=sel.value;
+      var nh=(req.history||[]).concat([{status:ns,note:noteI.value||'Status atualizado para "'+ns+'".',date:new Date().toISOString()}]);
+      var ur=await sb.from('requests').update({status:ns,sched_date:sdI.value||req.sched_date||null,history:nh,updated_at:new Date().toISOString()}).eq('id',req.id);
+      if(!ur.error){
+        await sb.from('notifications').insert({id:genId(),to_user:req.user_id,req_id:req.id,msg:'Sua solicitação NF '+req.nf+' foi atualizada: '+ns,read:false});
+        ov.remove();loadAll();
+      }else{alert('Erro: '+ur.error.message);svBtn.disabled=false;svBtn.textContent='Salvar atualização';}
+    }},'Salvar atualização');
+    adminPanel.appendChild(svBtn);
+    mkTab('⚙️ Atualizar',adminPanel);
+  }
+  tabBtns[0].classList.add('active');panels[0].style.display='block';
+  body.appendChild(tabBar);panels.forEach(function(p){body.appendChild(p);});
+  if(!isAdmin)body.appendChild(el('button',{'class':'btn btn-secondary',type:'button',style:'width:100%;margin-top:8px',onclick:function(){ov.remove();}},'Fechar'));
+  m.appendChild(body);ov.appendChild(m);document.body.appendChild(ov);
+}
+
+// ── RESCHEDULE ────────────────────────────────────────────────────────────────
+function openReschedule(req,parentOv){
+  var ov=el('div',{'class':'modal-overlay',style:'z-index:1100'});
+  var m=el('div',{'class':'modal',style:'max-width:420px'});
+  m.appendChild(el('div',{'class':'modal-header'},el('h3',{style:'margin:0;font-size:18px;font-weight:700;color:#F0F4FF'},'🔄 Solicitar Reagendamento'),el('button',{style:'background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;width:34px;height:34px;font-size:18px;cursor:pointer;color:#94A3B8;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0',onclick:function(){ov.remove();}},'×')));
+  var body=el('div',{'class':'modal-body'});
+  body.appendChild(el('p',{style:'color:#A8B4CC;font-size:14px;margin-bottom:16px'},'NF '+req.nf+' agendada para '+fmtDate(req.sched_date)+'. Informe o motivo:'));
+  var motivo=el('textarea',{rows:'3',placeholder:'Ex: Veículo indisponível...',style:'width:100%;padding:12px 16px;border:1.5px solid rgba(255,255,255,.1);border-radius:14px;font-size:14px;outline:none;resize:vertical;font-family:inherit;background:#151A30;color:#EEF2FF;margin-bottom:16px'});
+  var ndW=el('div',{'class':'input-wrap'});ndW.appendChild(el('label',{},'Nova data sugerida'));
+  var ndI=el('input',{type:'date'});
+  ndI.addEventListener('change',function(){if(APP.blockedDates.includes(ndI.value)){alert('⚠️ Data bloqueada. Escolha outra.');ndI.value='';}});
+  ndW.appendChild(ndI);
+  var btns=el('div',{style:'display:flex;gap:10px'});
+  var send=el('button',{'class':'btn btn-warning',style:'flex:2',type:'button',onclick:async function(){
+    if(!motivo.value.trim()){alert('Informe o motivo.');return;}
+    send.disabled=true;send.textContent='Enviando...';
+    var note='Reagendamento solicitado. Motivo: '+motivo.value+(ndI.value?' | Nova data: '+fmtDate(ndI.value):'');
+    var nh=(req.history||[]).concat([{status:'Reagendamento Solicitado',note:note,date:new Date().toISOString()}]);
+    var ur=await sb.from('requests').update({status:'Reagendamento Solicitado',history:nh,updated_at:new Date().toISOString()}).eq('id',req.id);
+    if(!ur.error){
+      await sb.from('notifications').insert({id:genId(),to_user:'admin',req_id:req.id,msg:'⚠️ Reagendamento solicitado por '+APP.user.name+' — NF '+req.nf,read:false});
+      ov.remove();parentOv.remove();loadAll();
+    }else{alert('Erro: '+ur.error.message);send.disabled=false;send.textContent='Enviar';}
+  }},'Enviar');
+  btns.appendChild(el('button',{'class':'btn btn-secondary',style:'flex:1',type:'button',onclick:function(){ov.remove();}},'Cancelar'));
+  btns.appendChild(send);
+  body.appendChild(motivo);body.appendChild(ndW);body.appendChild(btns);
+  m.appendChild(body);ov.appendChild(m);document.body.appendChild(ov);
+}
+
+// ── DELETE REQUEST ────────────────────────────────────────────────────────────
+async function deleteReq(req,ov){
+  if(!confirm('Excluir solicitação NF '+req.nf+'? Esta ação não pode ser desfeita.'))return;
+  var r=await sb.from('requests').delete().eq('id',req.id);
+  if(r.error){alert('Erro: '+r.error.message);return;}
+  ov.remove();loadAll();
+}
+
+render();
+</script>
+</body>
+</html>
